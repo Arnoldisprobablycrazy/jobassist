@@ -14,11 +14,13 @@ body {
     --color-brand-customs-light: #38F5F5;
     --color-background-accent: #FF6B6B;
     --color-texts-default: #FFF8DC;
+    --color-texts-cards: #1d365e;
     --color-text-secondary: #FFFFFF;
     --color-texts-primary: #0a0a24;
     --color-background-hover: #FFD166;
     --color-background-icons: #044444;
     --color-background-accenty: #10B981;
+    --color-background-sidbar: #1d365e;
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -66,6 +68,7 @@ body {
         background-color: var(--color-background-accent)
     }
     .bg-background-icons{ background-color: var(--color-background-icons);}
+    .bg-background-sidbar{ background-color: var(--color-background-sidbar);}
 
     .hover\:bg-background-hover:hover {
         background-color: var(--color-background-hover);
@@ -74,6 +77,7 @@ body {
     .text-texts-default {color: var(--color-texts-default)}
     .text-text-secondary{color: var(--color-text-secondary)}
     .text-texts-primary{color: var(--color-texts-primary)}
+    .text-texts-cards{color: var(--color-texts-cards)}
 
 }
 

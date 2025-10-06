@@ -31,8 +31,7 @@ export default async function DashboardLayout({
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    
         <ThemeProvider attribute="class"
             defaultTheme="system"
             enableSystem
@@ -49,7 +48,5 @@ export default async function DashboardLayout({
           </SidebarProvider>   
           </ThemeProvider>
         
-      </body>
-    </html>
-  );
+  )
 }

@@ -76,7 +76,7 @@ const accountItems = [
 ]
 
 const AppSidebar = () => {
-  return <Sidebar collapsible="icon">
+  return <Sidebar collapsible="icon" className="bg-background-sidbar">
     <SidebarHeader>
     <SidebarMenu>
       <SidebarMenuItem>
