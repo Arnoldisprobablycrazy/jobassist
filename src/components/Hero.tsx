@@ -17,11 +17,11 @@ export default function Hero() {
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Land Your Dream Job
-            <span className="block text-texts-default">3x Faster</span>
+            <span className="block text-accent">3x Faster</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-text-secondary">
             AI-powered job application assistant that helps you craft perfect resumes, 
-            write compelling cover letters, and manage different applications.
+            write compelling cover letters, and track your applications.
           </p>
           
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -31,7 +31,7 @@ export default function Hero() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 bg-background-maweu opacity-35"
+                className="flex-1 px-4 py-3 rounded-lg text-texts-default bg-background-maweu/35 border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent"
                 required
               />
               <button
@@ -41,7 +41,7 @@ export default function Hero() {
                 Join Waitlist
               </button>
             </div>
-            <p className="text-sm mt-3 text-gray-300">
+            <p className="text-sm mt-3 text-text-secondary">
               Join 5,000+ job seekers who found their dream job with JobAssist
             </p>
           </form>
@@ -50,15 +50,15 @@ export default function Hero() {
         <div className="mt-16 grid md:grid-cols-3 gap-8 text-center">
           <div>
             <div className="text-3xl font-bold text-accent">87%</div>
-            <p className="text-gray-200">More interview calls</p>
+            <p className="text-text-secondary">More interview calls</p>
           </div>
           <div>
             <div className="text-3xl font-bold text-accent">2.5x</div>
-            <p className="text-gray-200">Faster job search</p>
+            <p className="text-text-secondary">Faster job search</p>
           </div>
           <div>
             <div className="text-3xl font-bold text-accent">$15K</div>
-            <p className="text-gray-200">Higher average salary</p>
+            <p className="text-text-secondary">Higher average salary</p>
           </div>
         </div>
       </div>
