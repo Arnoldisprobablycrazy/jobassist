@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { signUp } from "../../actions/auth";
 import Link from "next/link";
 import Image from "next/image";
+import Toast from "./toast";
 
 const SignUpForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -23,10 +26,21 @@ const SignUpForm = () => {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    
+    console.log('Signup attempt with:', { 
+      email: email,
+      username: formData.get('username')
+    });
+
     const result = await signUp(formData);
+    console.log('Signup result:', result);
 
     if (result.status === "success") {
-      router.push("/accounts/login");
+      setSuccessMessage(`Account created successfully! We've sent a verification link to ${email}. Please check your email to verify your account before signing in.`);
+      setShowSuccess(true);
+      // Clear form
+      setFormData({ username: "", email: "", password: "" });
     } else {
       setError(result.status);
     }
@@ -48,6 +62,15 @@ const SignUpForm = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Success Toast for email verification */}
+      <Toast
+        message={successMessage}
+        type="info"
+        isVisible={showSuccess}
+        onClose={() => setShowSuccess(false)}
+        duration={8000} // Longer duration for important message
+      />
+
       {/* Left Side - Visual Section (Hidden on mobile) */}
       <div className="hidden lg:flex lg:flex-1 relative bg-gradient-brand overflow-hidden">
         {/* Animated Background */}
@@ -191,6 +214,39 @@ const SignUpForm = () => {
               </p>
             </div>
 
+            {/* Email Verification Notice - Shows after successful signup */}
+            {showSuccess && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-medium text-blue-800">Verify Your Email</h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      We've sent a verification link to your email address. Please check your inbox and click the link to verify your account before signing in.
+                    </p>
+                    <div className="mt-3 flex space-x-3">
+                      <Link
+                        href="/accounts/login"
+                        className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
+                      >
+                        Go to Login
+                      </Link>
+                      <button
+                        onClick={() => setShowSuccess(false)}
+                        className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-200 transition-colors"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Username Field */}
@@ -208,6 +264,7 @@ const SignUpForm = () => {
                     value={formData.username}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 bg-white text-texts-default placeholder-gray-500 shadow-sm"
+                    disabled={loading}
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -232,6 +289,7 @@ const SignUpForm = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 bg-white text-texts-default placeholder-gray-500 shadow-sm"
+                    disabled={loading}
                   />
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                     <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -257,11 +315,13 @@ const SignUpForm = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 bg-white text-texts-primary placeholder-gray-500 shadow-sm"
+                    disabled={loading}
                   />
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 transition-colors"
+                    disabled={loading}
                   >
                     {showPassword ? (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,11 +340,14 @@ const SignUpForm = () => {
 
               {/* Error Message */}
               {error && (
-                <div className="flex items-center p-3 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200">
-                  <svg className="flex-shrink-0 w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <div className="flex items-start p-4 rounded-lg border bg-red-50 border-red-200 text-red-800">
+                  <svg className="flex-shrink-0 w-5 h-5 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/>
                   </svg>
-                  <span>{error}</span>
+                  <div className="flex-1">
+                    <p className="font-medium">Sign Up Error</p>
+                    <p className="text-sm mt-1">{error}</p>
+                  </div>
                 </div>
               )}
 

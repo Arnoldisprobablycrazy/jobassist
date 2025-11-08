@@ -17,6 +17,7 @@ body {
     --color-texts-cards: #1d365e;
     --color-text-secondary: #FFFFFF;
     --color-texts-primary: #0a0a24;
+    --color-text-username: #F54927;
     --color-background-hover: #FFD166;
     --color-background-icons: #044444;
     --color-background-accenty: #10B981;
@@ -78,6 +79,7 @@ body {
     .text-text-secondary{color: var(--color-text-secondary)}
     .text-texts-primary{color: var(--color-texts-primary)}
     .text-texts-cards{color: var(--color-texts-cards)}
+    .texts-text-username{color: var(--color-text-username)}
 
 }
 

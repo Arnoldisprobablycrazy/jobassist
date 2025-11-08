@@ -8,6 +8,7 @@ import JobDescriptionUpload from '@/components/JobDescriptionUpload'
 import ResumeUpload from '@/components/ResumeUpload'
 import SimilarityScoring from '@/components/SimilarityScoring'
 import CoverLetterGenerator from '@/components/CoverLetterGenerator'
+import { createClient } from '@/utils/supabase/client';
 
 // Define the data types
 interface ResumeData {
@@ -41,12 +42,56 @@ interface SimilarityScores {
   keyword_match_score: number;
 }
 
+interface User {
+  email?: string;
+  user_metadata?: {
+    username?: string;
+    full_name?: string;
+    name?: string;
+  };
+}
+
 const Dashboardpage = () => {
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [jobData, setJobData] = useState<JobData | null>(null);
   const [similarityScores, setSimilarityScores] = useState<SimilarityScores | null>(null);
   const [activeTab, setActiveTab] = useState<'upload' | 'analysis' | 'cover-letter'>('upload');
   const [isCalculatingSimilarity, setIsCalculatingSimilarity] = useState(false);
+   const [user, setUser] = useState<User | null>(null); // Add user state
+  const [showWelcome, setShowWelcome] = useState(false);
+
+   // Fetch user data and show welcome message
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      
+      // Show welcome message only on first load
+      const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+      if (!hasSeenWelcome && user) {
+        setShowWelcome(true);
+        sessionStorage.setItem('hasSeenWelcome', 'true');
+        
+        // Hide welcome message after 4 seconds
+        setTimeout(() => {
+          setShowWelcome(false);
+        }, 4000);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const getUsername = () => {
+    if (!user) return 'User';
+    return user.user_metadata?.username || 
+           user.user_metadata?.full_name || 
+           user.user_metadata?.name ||
+           user.email?.split('@')[0] || 
+           'User';
+  };
+
 
   // Handler for when resume is parsed - just store the data
   const handleResumeParsed = (data: ResumeData) => {
@@ -106,10 +151,22 @@ const Dashboardpage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      {/*Welcome message}
+      {showWelcome && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
+          <div className="bg-gradient-to-r from-primary to-accent text-white px-8 py-4 rounded-lg shadow-lg text-center">
+            <h3 className="text-xl font-bold mb-1">Welcome back! 👋</h3>
+            <p className="text-white/90">Hello {getUsername()}, great to see you again!</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Job Application Assistant</h1>
-        <p className="text-gray-600 mt-2">Upload your resume and job description to get started</p>
+        <p className="text-gray-600 mt-2">
+          Welcome back, <span className='text-texts-username font-bold text-2xl'>{getUsername()}!</span> Upload your resume and job description to get started
+        </p>
       </div>
 
       {/* Navigation Tabs */}
