@@ -3,6 +3,22 @@ Flask-CORS==4.0.0
 PyPDF2==3.0.1
 python-docx==0.8.11
 nltk==3.8.1
-scikit-learn==1.3.0
-numpy==1.24.3
-spacy==3.7.2
+
+# Core ML libraries - using latest versions with pre-built Windows wheels
+numpy>=1.26.0
+scikit-learn>=1.3.0
+spacy>=3.7.0
+
+# AI Stack Dependencies - LlamaIndex ecosystem
+llama-index>=0.10.0
+llama-index-core>=0.10.0
+llama-index-vector-stores-qdrant>=0.2.0
+llama-index-embeddings-cohere>=0.2.0
+llama-index-llms-groq>=0.1.0
+qdrant-client>=1.7.0
+cohere>=5.0.0
+groq>=0.4.0
+
+# Additional utilities
+python-dotenv==1.0.0
+requests==2.31.0

@@ -104,7 +104,7 @@ const LoginForm = () => {
               <h1 className="text-5xl font-bold mb-6 leading-tight">
                 Welcome Back to
                 <span className="block bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                  Your Job Search
+                  Your Job Application Assistant
                 </span>
               </h1>
             </div>
@@ -112,15 +112,7 @@ const LoginForm = () => {
             {/* Features with Animations */}
             <div className="space-y-6">
               <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Track Your Progress</h3>
-                  <p className="text-text-secondary">Monitor your applications and interviews in one place</p>
-                </div>
+                
               </div>
 
               <div className="flex items-center gap-4 group">
@@ -150,13 +142,13 @@ const LoginForm = () => {
 
             {/* Testimonial */}
             <div className="mt-12 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20">
-              <p className="text-lg italic mb-4">"I landed 3 interviews in my first week using JobAssist! The platform made job searching so much easier."</p>
+              <p className="text-lg italic mb-4">"I landed 3 interviews in my first week using JobAssist! The platform made creating Compelling Cover letters easier."</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                  <span className="font-bold text-white">MJ</span>
+                  <span className="font-bold text-white">JD</span>
                 </div>
                 <div>
-                  <p className="font-semibold">Mike Johnson</p>
+                  <p className="font-semibold">John Doe</p>
                   <p className="text-text-secondary text-sm">Product Manager at Meta</p>
                 </div>
               </div>

@@ -18,29 +18,91 @@ export default function CoverLetterGenerator({ resumeData, jobData }: CoverLette
     setIsGenerating(true);
     
     try {
+      console.log('🤖 Generating AI-powered cover letter...');
+      console.log('   Resume data:', {
+        name: resumeData.name,
+        skills: resumeData.skills?.length || 0,
+        experience: resumeData.experience?.length || 0
+      });
+      console.log('   Job data:', {
+        title: jobData.title,
+        company: jobData.company,
+        required_skills: jobData.required_skills?.length || 0
+      });
+      console.log('   Tone:', tone);
+
+      // Prepare detailed context for AI
+      const payload = {
+        resume_data: {
+          ...resumeData,
+          // Ensure all important fields are included
+          name: resumeData.name || 'Applicant',
+          email: resumeData.email || '',
+          phone: resumeData.phone || '',
+          skills: resumeData.skills || [],
+          experience: resumeData.experience || [],
+          education: resumeData.education || [],
+          summary: resumeData.summary || ''
+        },
+        job_data: {
+          ...jobData,
+          // Ensure all important fields are included
+          title: jobData.title || 'Position',
+          company: jobData.company || 'Company',
+          description: jobData.description || '',
+          required_skills: jobData.required_skills || [],
+          nice_to_have_skills: jobData.nice_to_have_skills || [],
+          experience_required: jobData.experience_required || '',
+          salary_range: jobData.salary_range || '',
+          location: jobData.location || ''
+        },
+        tone: tone,
+        preferences: {
+          tone: tone,
+          max_length: 400,  // Target around 400 words
+          focus_areas: ['relevant_experience', 'skill_match', 'enthusiasm'],
+          include_metrics: true,  // Include quantifiable achievements if available
+          personalize_to_company: true
+        }
+      };
+
       const response = await fetch('/api/generate-cover-letter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          resume_data: resumeData,
-          job_data: jobData,
-          tone: tone
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('   Response status:', response.status);
+
       const result = await response.json();
+      console.log('   Response received:', result.success ? '✅ Success' : '❌ Failed');
 
       if (result.success) {
-        setCoverLetter(result.data.cover_letter);
+        // Extract cover letter from different possible response structures
+        const coverLetterText = 
+          result.data?.cover_letter || 
+          result.data?.content || 
+          result.cover_letter ||
+          result.data;
+        
+        if (typeof coverLetterText === 'string') {
+          setCoverLetter(coverLetterText);
+          console.log('   ✅ Cover letter generated successfully!');
+          console.log('   Generated with:', result.data?.generated_with || 'AI');
+        } else {
+          throw new Error('Invalid cover letter format received');
+        }
       } else {
-        console.error('Generation failed:', result.error);
-        alert('Failed to generate cover letter: ' + result.error);
+        const errorMsg = result.error || 'Unknown error occurred';
+        console.error('   ❌ Generation failed:', errorMsg);
+        alert(`Failed to generate cover letter:\n\n${errorMsg}\n\nPlease make sure the Python backend is running.`);
       }
     } catch (error) {
-      console.error('Generation error:', error);
-      alert('Error generating cover letter');
+      console.error('   ❌ Generation error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Error generating cover letter:\n\n${errorMessage}\n\nPlease check:\n- Python backend is running on port 5000\n- Resume and job data are valid`);
     } finally {
       setIsGenerating(false);
     }

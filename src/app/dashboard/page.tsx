@@ -151,7 +151,7 @@ const Dashboardpage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      {/*Welcome message}
+      {/* Welcome message */}
       {showWelcome && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
           <div className="bg-gradient-to-r from-primary to-accent text-white px-8 py-4 rounded-lg shadow-lg text-center">
@@ -269,6 +269,8 @@ const Dashboardpage = () => {
                 resumeData={resumeData}
                 jobData={jobData}
                 scores={similarityScores}
+                resumeText={resumeData.raw_text}
+                jobText={jobData.description || JSON.stringify(jobData)}
               />
               
               {/* Data Comparison */}

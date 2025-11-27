@@ -14,6 +14,7 @@ export default function JobDescriptionUpload({ onJobDescriptionParsed }: JobDesc
   const [pastedText, setPastedText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const handleJobAnalysis = async (jobText: string) => {
     if (!jobText.trim()) {
@@ -75,9 +76,49 @@ export default function JobDescriptionUpload({ onJobDescriptionParsed }: JobDesc
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
-      setError('File upload selected. Please use the paste method for now.');
+    if (!file) return;
+
+    setUploadedFile(file);
+    setError(null);
+    setIsAnalyzing(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      console.log('Uploading job description file...', file.name);
+
+      const response = await fetch('/api/analyze-job/file', {
+        method: 'POST',
+        body: formData,
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('API response:', result);
+
+      if (result.success) {
+        onJobDescriptionParsed(result.data);
+        // Reset file input on success
+        setFileInputKey(prev => prev + 1);
+      } else {
+        throw new Error(result.error || 'Analysis failed');
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setError(`Failed to analyze job description file: ${errorMessage}`);
+      setUploadedFile(null);
+      // Reset file input on error
+      setFileInputKey(prev => prev + 1);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -139,17 +180,28 @@ export default function JobDescriptionUpload({ onJobDescriptionParsed }: JobDesc
               Supports PDF, DOC, DOCX, TXT
             </p>
             <input
+              key={fileInputKey}
               type="file"
               accept=".pdf,.doc,.docx,.txt"
               onChange={handleFileUpload}
               className="hidden"
               id="jd-upload"
+              disabled={isAnalyzing}
             />
             <label
               htmlFor="jd-upload"
-              className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary cursor-pointer text-sm"
+              className={`bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary cursor-pointer text-sm flex items-center space-x-2 ${
+                isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Upload File
+              {isAnalyzing ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  <span>Analyzing...</span>
+                </>
+              ) : (
+                <span>Upload File</span>
+              )}
             </label>
           </div>
         ) : (
@@ -195,18 +247,26 @@ export default function JobDescriptionUpload({ onJobDescriptionParsed }: JobDesc
           <div className="mt-4 border rounded-lg p-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <FileText className="w-6 h-6 text-green-500" />
+                {isAnalyzing ? (
+                  <Loader className="w-6 h-6 text-blue-500 animate-spin" />
+                ) : (
+                  <FileText className="w-6 h-6 text-green-500" />
+                )}
                 <div>
                   <p className="font-medium text-sm">{uploadedFile.name}</p>
-                  <p className="text-xs text-gray-500">Ready for analysis</p>
+                  <p className="text-xs text-gray-500">
+                    {isAnalyzing ? 'Analyzing...' : 'Ready for analysis'}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => setUploadedFile(null)}
-                className="text-gray-400 hover:text-red-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {!isAnalyzing && (
+                <button
+                  onClick={() => setUploadedFile(null)}
+                  className="text-gray-400 hover:text-red-500"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         )}

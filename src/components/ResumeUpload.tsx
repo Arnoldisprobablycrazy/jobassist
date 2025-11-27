@@ -53,12 +53,31 @@ export default function ResumeUpload({ onResumeParsed }: ResumeUploadProps) {
         onResumeParsed(result.data);
       } else {
         console.error('Parsing failed:', result.error);
-        alert('Failed to parse resume: ' + result.error);
+        
+        // Provide user-friendly error messages
+        let errorMessage = result.error || 'Failed to parse resume';
+        
+        if (errorMessage.includes('Invalid resume document')) {
+          // Extract the specific validation error
+          alert('⚠️ Document Validation Failed\n\n' + errorMessage + '\n\nPlease upload a valid resume or CV document.');
+        } else if (errorMessage.includes('too short')) {
+          alert('⚠️ Invalid Resume\n\nThe uploaded document is too short to be a resume. Please upload a complete resume document.');
+        } else {
+          alert('Failed to parse resume:\n\n' + errorMessage);
+        }
+        
         setUploadedFile(null);
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Error uploading resume. Please check if the Python backend is running on port 5000.');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      
+      if (errorMsg.includes('fetch failed') || errorMsg.includes('ECONNREFUSED')) {
+        alert('❌ Connection Error\n\nCannot connect to the backend service.\nPlease ensure the Python backend is running on port 5000.');
+      } else {
+        alert('Error uploading resume:\n\n' + errorMsg);
+      }
+      
       setUploadedFile(null);
     } finally {
       setIsParsing(false);
